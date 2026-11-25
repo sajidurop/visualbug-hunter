@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VisualBug Hunter — Catch visual regressions before your users do.</title>
+<meta name="description" content="Visual regression testing in the browser: upload a baseline and a new screenshot, compare pixels, highlight changed regions, and keep a run history.">
+<meta name="keywords" content="visual regression testing, screenshot comparison, playwright alternative, website testing">
+<meta name="author" content="Sajidur">
+<meta property="og:title" content="VisualBug Hunter — Catch visual regressions before your users do.">
+<meta property="og:description" content="Visual regression testing in the browser: upload a baseline and a new screenshot, compare pixels, highlight changed regions, and keep a run history.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://alltoolfree.site">
+<meta name="twitter:card" content="summary">
+<meta name="robots" content="index, follow">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"VisualBug Hunter","applicationCategory":"DeveloperApplication","operatingSystem":"Web","author":{"@type":"Person","name":"Sajidur","url":"https://alltoolfree.site"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT"}</script>
+<style>
+:root{--primary:#2563eb;--accent:#dbeafe;--bg:#f8fafc;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--card:#fff}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:5}
+.logo{width:38px;height:38px;border-radius:10px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px}
+header h1{font-size:19px;margin:0}header .tag{color:var(--muted);font-size:13px}
+header nav{margin-left:auto;display:flex;gap:12px;align-items:center;font-size:14px}
+header nav a{color:var(--ink);text-decoration:none}header nav a:hover{color:var(--primary)}
+main{max-width:1020px;margin:0 auto;padding:22px 16px 40px}
+.hero{background:var(--accent);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:18px}
+.hero h2{margin:0 0 6px;font-size:22px}.hero p{margin:0;color:#334155}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
+button{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer;font-size:14px}
+button.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+button:hover{filter:brightness(.96)}
+input,select,textarea{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;font-family:inherit;background:#fff}
+textarea{width:100%}input[type=file]{border:none;padding:4px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+tr.bad td{background:#fef2f2}.muted{color:var(--muted);font-size:13px}.ok{color:#15803d;font-weight:600}.warn{color:#b45309;font-weight:600}
+.issue{border-left:4px solid #f59e0b;background:#fffbeb;padding:10px 12px;border-radius:8px;margin-bottom:8px}
+.issue.error{border-color:#dc2626;background:#fef2f2}.issue.info{border-color:#64748b;background:#f8fafc}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.stats>div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center}
+.stats b{display:block;font-size:22px}.stats span{font-size:12px;color:var(--muted)}
+.shot{max-width:100%;border:1px solid var(--line);border-radius:8px}
+canvas.shot{width:100%;height:auto}
+pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;overflow:auto;font-size:12.5px;white-space:pre-wrap}
+code{background:#f1f5f9;padding:1px 5px;border-radius:5px;font-size:13px}
+.imgWrap{position:relative;display:inline-block;max-width:100%}.imgWrap img{max-width:100%;border-radius:8px;display:block}
+.pin{position:absolute;width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transform:translate(-50%,-50%);cursor:pointer}
+.traceRow{display:flex;gap:8px;align-items:center;margin:4px 0;font-size:13px}.tName{min-width:150px}.tBar{height:10px;border-radius:5px;display:inline-block}
+footer{border-top:1px solid var(--line);background:var(--card);padding:20px;text-align:center;font-size:14px;color:var(--muted)}
+footer a{color:var(--primary);text-decoration:none;margin:0 6px}footer a:hover{text-decoration:underline}
+body.client-view .admin-only{display:none}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;display:none;z-index:50}
+dialog{border:1px solid var(--line);border-radius:12px;padding:20px;max-width:420px}
+</style>
+</head>
+<body class="canvas">
+<header>
+<div class="logo">VH</div>
+<div><h1>VisualBug Hunter</h1><div class="tag">Catch visual regressions before your users do. · v1.0.0</div></div>
+<nav><a href="#app">App</a><a href="#how">How it works</a><button id="aboutBtn">About</button></nav>
+</header>
+<main id="app">
+<div class="hero"><h2>Catch visual regressions before your users do.</h2><p>Visual regression testing in the browser: upload a baseline and a new screenshot, compare pixels, highlight changed regions, and keep a run history.</p></div>
+<div class="grid2"><div class="panel"><h3>Baseline</h3><input type="file" id="baseFile" accept="image/*"><p id="baseMeta" class="muted"></p><canvas id="baseCanvas" class="shot"></canvas></div><div class="panel"><h3>New screenshot</h3><input type="file" id="newFile" accept="image/*"><p id="newMeta" class="muted"></p><canvas id="newCanvas" class="shot"></canvas></div></div>
+<div class="panel"><label>Difference threshold <input type="range" id="threshold" min="1" max="100" value="12"> <span class="muted">higher = fewer pixels count as changed</span></label><br><br><button id="compareBtn" class="primary">Compare screenshots</button> <button id="exportBtn">Export report (JSON)</button> <button id="clearBtn">Clear history</button></div>
+<div class="panel"><h3>Diff — changed pixels in red</h3><canvas id="diffCanvas" class="shot"></canvas><p id="diffPct"></p><p id="diffVerdict"></p></div>
+<div class="panel"><h3>Run history</h3><table><thead><tr><th>When</th><th>Diff</th><th>Threshold</th><th>Verdict</th></tr></thead><tbody id="runs"></tbody></table></div>
+<div class="panel" id="how"><h3>How it works</h3><p>Upload a baseline screenshot and a new screenshot. Set the threshold, click Compare, and inspect the red-highlighted diff canvas. Runs are saved locally.</p><p class="muted">Data is stored only in your browser (localStorage) unless a feature explicitly fetches a URL or API you enter. No tracking, no account, no server required — open <code>index.html</code> or serve this folder with any static host.</p></div>
+</main>
+<footer>
+<p><strong>VisualBug Hunter v1.0.0</strong> · Created by <a href="https://alltoolfree.site" target="_blank" rel="noopener">Sajidur</a> · Open Source (MIT)</p>
+<p><a href="https://alltoolfree.site" target="_blank" rel="noopener">AllToolFree ↗</a> <a href="https://alltoolfree.site" target="_blank" rel="noopener">More free tools ↗</a> <a href="https://github.com/sajidurvisual-tech/visualbug-hunter" target="_blank" rel="noopener">View source on GitHub ↗</a> <a href="https://alltoolfree.site" target="_blank" rel="noopener">Discover AllToolFree ↗</a></p>
+<p class="muted">Self-hostable. Works offline except for features that fetch a URL or API you supply.</p>
+</footer>
+<dialog id="aboutDlg"><h3>About VisualBug Hunter</h3><p>Visual regression testing in the browser: upload a baseline and a new screenshot, compare pixels, highlight changed regions, and keep a run history.</p><p>Created by <a href="https://alltoolfree.site" target="_blank" rel="noopener">Sajidur</a></p><p><a href="https://alltoolfree.site" target="_blank" rel="noopener">Discover AllToolFree ↗</a> — more free tools by the same creator.</p><p class="muted">MIT License. Version 1.0.0.</p><button id="closeDlg">Close</button></dialog>
+<div id="toast"></div>
+<script>
+const BRAND={creator:"Sajidur",website:"https://alltoolfree.site",repository:"https://github.com/sajidurvisual-tech/visualbug-hunter",product:"VisualBug Hunter",version:"1.0.0"};
+const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
+function save(k,v){try{localStorage.setItem("visualbug-hunter:"+k,JSON.stringify(v))}catch(e){}}
+function load(k,d){try{const v=JSON.parse(localStorage.getItem("visualbug-hunter:"+k));return v==null?d:v}catch(e){return d}}
+function download(name,text,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:type||"application/json"}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
+function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",2600)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+document.getElementById("aboutBtn").onclick=()=>document.getElementById("aboutDlg").showModal();
+document.getElementById("closeDlg").onclick=()=>document.getElementById("aboutDlg").close();
+
+let baseImg=null,newImg=null;
+function readFile(inp,cb){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{const im=new Image();im.onload=()=>cb(im);im.src=e.target.result};r.readAsDataURL(f)}
+$('#baseFile').onchange=e=>readFile(e.target,im=>{baseImg=im;$('#baseMeta').textContent=im.width+'x'+im.height;drawPreview()});
+$('#newFile').onchange=e=>readFile(e.target,im=>{newImg=im;$('#newMeta').textContent=im.width+'x'+im.height;drawPreview()});
+function drawPreview(){if(baseImg){const c=$('#baseCanvas');c.width=baseImg.width;c.height=baseImg.height;c.getContext('2d').drawImage(baseImg,0,0)}if(newImg){const c=$('#newCanvas');c.width=newImg.width;c.height=newImg.height;c.getContext('2d').drawImage(newImg,0,0)}}
+$('#compareBtn').onclick=()=>{
+ if(!baseImg||!newImg){toast('Upload both baseline and new screenshots first');return}
+ const w=Math.min(baseImg.width,newImg.width),h=Math.min(baseImg.height,newImg.height),thr=+$('#threshold').value;
+ const bc=document.createElement('canvas');bc.width=w;bc.height=h;const bx=bc.getContext('2d');bx.drawImage(baseImg,0,0,w,h);
+ const nc=document.createElement('canvas');nc.width=w;nc.height=h;const nx=nc.getContext('2d');nx.drawImage(newImg,0,0,w,h);
+ const bd=bx.getImageData(0,0,w,h).data,nd=nx.getImageData(0,0,w,h).data;
+ const out=document.createElement('canvas');out.width=w;out.height=h;const ox=out.getContext('2d');const od=ox.createImageData(w,h);
+ let diff=0;const boxes=[];
+ for(let i=0;i<bd.length;i+=4){const d=Math.abs(bd[i]-nd[i])+Math.abs(bd[i+1]-nd[i+1])+Math.abs(bd[i+2]-nd[i+2]);const is=d>thr*3;if(is)diff++;od.data[i]=is?255:bd[i];od.data[i+1]=is?0:bd[i+1];od.data[i+2]=is?60:bd[i+2];od.data[i+3]=255}
+ ox.putImageData(od,0,0);
+ const dc=$('#diffCanvas');dc.width=w;dc.height=h;dc.getContext('2d').drawImage(out,0,0);
+ const pct=(diff/(w*h)*100);$('#diffPct').textContent=pct.toFixed(2)+'% pixels differ';
+ $('#diffVerdict').textContent=pct<0.1?'PASS — no meaningful visual change':pct<2?'REVIEW — small visual change':'FAIL — significant visual change';
+ const run={at:new Date().toISOString(),pct:+pct.toFixed(2),threshold:thr,w,h,verdict:$('#diffVerdict').textContent};
+ const hist=load('runs',[]);hist.unshift(run);save('runs',hist.slice(0,50));renderRuns();
+ toast('Comparison done: '+pct.toFixed(2)+'% differ');
+};
+function renderRuns(){const h=load('runs',[]);$('#runs').innerHTML=h.length?h.map(r=>`<tr><td>${esc(r.at.slice(0,19).replace('T',' '))}</td><td>${r.pct}%</td><td>${r.threshold}</td><td>${esc(r.verdict)}</td></tr>`).join(''):'<tr><td colspan="4">No runs yet — upload two screenshots and compare.</td></tr>'}
+$('#exportBtn').onclick=()=>download('visualbug-report.json',JSON.stringify({tool:'VisualBug Hunter',runs:load('runs',[])},null,2));
+$('#clearBtn').onclick=()=>{save('runs',[]);renderRuns()};
+renderRuns();
+
+</script>
+</body>
+</html>
