@@ -66,7 +66,7 @@ dialog{border:1px solid var(--line);border-radius:12px;padding:20px;max-width:42
 <div class="panel"><label>Difference threshold <input type="range" id="threshold" min="1" max="100" value="12"> <span class="muted">higher = fewer pixels count as changed</span></label><br><br><button id="compareBtn" class="primary">Compare screenshots</button> <button id="exportBtn">Export report (JSON)</button> <button id="clearBtn">Clear history</button></div>
 <div class="panel"><h3>Diff — changed pixels in red</h3><canvas id="diffCanvas" class="shot"></canvas><p id="diffPct"></p><p id="diffVerdict"></p></div>
 <div class="panel"><h3>Run history</h3><table><thead><tr><th>When</th><th>Diff</th><th>Threshold</th><th>Verdict</th></tr></thead><tbody id="runs"></tbody></table></div>
-<div class="panel" id="how"><h3>How it works</h3><p>Upload a baseline screenshot and a new screenshot. Set the threshold, click Compare, and inspect the red-highlighted diff canvas. Runs are saved locally.</p><p class="muted">Data is stored only in your browser (localStorage) unless a feature explicitly fetches a URL or API you enter. No tracking, no account, no server required — open <code>index.html</code> or serve this folder with any static host.</p></div>
+<div class="panel" id="how"><h3>How it works</h3><p>Upload a baseline screenshot and a new screenshot. Set the threshold, click Compare, and inspect the red-highlighted diff canvas. Runs are saved locally.</p><p class="muted">Data is stored only in your browser (localStorage) unless a feature explicitly fetches a URL or API you enter. Run <code>npm start</code> for the real server — live checks run server-side and history is saved on disk. Opening <code>index.html</code> directly still works in browser-only mode.</p></div>
 </main>
 <footer>
 <p><strong>VisualBug Hunter v1.0.0</strong> · Created by <a href="https://alltoolfree.site" target="_blank" rel="noopener">Sajidur</a> · Open Source (MIT)</p>
@@ -112,6 +112,43 @@ function renderRuns(){const h=load('runs',[]);$('#runs').innerHTML=h.length?h.ma
 $('#exportBtn').onclick=()=>download('visualbug-report.json',JSON.stringify({tool:'VisualBug Hunter',runs:load('runs',[])},null,2));
 $('#clearBtn').onclick=()=>{save('runs',[]);renderRuns()};
 renderRuns();
+
+
+/* __REAL_SERVER_WIRING__ */
+async function __api(path, body){
+  try{
+    const r = await fetch(path, {method: body ? 'POST' : 'GET', headers: {'Content-Type':'application/json'}, body: body ? JSON.stringify(body) : undefined});
+    if(!r.ok) return null;
+    return await r.json();
+  }catch(e){ return null; }
+}
+let __serverUp = false;
+__api('/api/health').then(h => {
+  if(h && h.ok){
+    __serverUp = true;
+    const nav = document.querySelector('header nav');
+    if(nav){ const s=document.createElement('span'); s.textContent='● Live server'; s.style.cssText='color:#15803d;font-weight:600;font-size:13px'; nav.prepend(s); }
+  }
+});
+function __on(btnId, fn){
+  document.addEventListener('click', async (e) => {
+    const t = e.target && e.target.closest ? e.target.closest('#'+btnId) : null;
+    if(t && __serverUp){ e.stopPropagation(); e.preventDefault(); await fn(); }
+  }, true);
+}
+function __v(id){ const el=document.getElementById(id); return el ? el.value : ''; }
+
+(function(){
+  const b=document.getElementById('compareBtn'); if(!b) return;
+  b.addEventListener('click', ()=>{ setTimeout(async ()=>{
+    if(!__serverUp) return;
+    const pct=parseFloat((document.getElementById('diffPct')||{textContent:''}).textContent)||0;
+    const th=parseInt(__v('threshold')||'0',10);
+    const verdict=(document.getElementById('diffVerdict')||{textContent:''}).textContent||'';
+    await __api('/api/check',{diffPct:pct,threshold:th,verdict});
+    toast('Run saved on the server.');
+  },500); });
+})();
 
 </script>
 </body>

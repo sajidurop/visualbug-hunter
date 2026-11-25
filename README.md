@@ -4,7 +4,7 @@ Looking for more useful tools? Discover what else you can build with → [AllToo
 
 **Catch visual regressions before your users do.**
 
-![License: MIT](https://img.shields.io/badge/License-MIT-green.svg) ![Made by Sajidur](https://img.shields.io/badge/Created%20by-Sajidur-blue) ![No build required](https://img.shields.io/badge/Run-Open%20index.html-brightgreen)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg) ![Made by Sajidur](https://img.shields.io/badge/Created%20by-Sajidur-blue) ![Run: npm start](https://img.shields.io/badge/Run-npm%20start-brightgreen)
 
 ## What problem it solves
 
@@ -12,7 +12,7 @@ Visual regression testing in the browser: upload a baseline and a new screenshot
 
 ## Why it exists
 
-Developers and small teams need this check constantly, but most tools for it are paid, hosted, or collect your data. VisualBug Hunter runs entirely in your browser: no account, no server, no tracking. Your data stays in localStorage on your own machine.
+Developers and small teams need this check constantly, but most tools for it are paid, hosted, or collect your data. VisualBug Hunter is a real, working tool you run yourself: `npm start` launches its own server, which does the actual work (live fetching, checks, webhooks, queue) and stores history on disk. Open `index.html` directly and it still works in browser-only mode, with history in localStorage. No account, no tracking.
 
 ## Main features
 
@@ -32,10 +32,20 @@ Upload a baseline screenshot and a new screenshot. Set the threshold, click Comp
 
 ## Architecture overview
 
-A single self-contained web app. `index.html` holds the markup, styles and JavaScript; `brand.json` holds the central creator/brand configuration; there is no backend and no build step.
+A real client + server app. `server.js` (Node.js, zero dependencies) serves the UI and exposes a real API (`POST /api/check`, `GET /api/health`, `GET /api/history`) that does the actual work server-side — live URL fetching, crawling, DNS lookups, webhook receiving, queue processing — and persists results in `data/` as JSON files. `index.html` is the UI: when served by the server it calls the API; opened directly, it falls back to browser-only mode. `brand.json` holds the central creator/brand configuration.
+
+## Running the real server
+
+```bash
+npm start
+# → http://localhost:3000
+```
+
+No dependencies to install — the server uses only Node built-ins. Copy `.env.example` to `.env` only if the tool needs an API key (see Environment variables).
 
 ## Technology stack
 
+- Node.js server (`server.js`, zero dependencies, Node ≥ 18): serves the UI, runs the real checks, stores history in `data/`.
 - HTML + CSS + vanilla JavaScript (no framework, no build tool, no dependencies to install).
 - Browser APIs only: `fetch`, `FileReader`, `canvas`, `localStorage`, `PerformanceObserver`, `WebCrypto` (where the feature needs them).
 - Public APIs used only when you enter a URL/key: OSV (`api.osv.dev`), npm registry, GitHub API, Google DNS-over-HTTPS, and the LLM provider you choose. Each is documented in the app itself.
@@ -44,41 +54,45 @@ A single self-contained web app. `index.html` holds the markup, styles and JavaS
 
 ```
 visualbug-hunter/
-├── index.html      # the whole app (markup + CSS + JS)
+├── server.js       # the real server (Node, zero deps) — API + static hosting
+├── package.json    # npm start → node server.js
+├── Dockerfile      # docker build -t visualbug-hunter . && docker run -p 3000:3000 visualbug-hunter
+├── .env.example    # copy to .env for API keys (never commit .env)
+├── index.html      # the whole UI (markup + CSS + JS, calls /api when served)
 ├── brand.json      # central brand configuration (creator, GitHub, website)
 ├── README.md       # this file
 ├── LICENSE         # MIT
+├── data/           # history on disk (created at runtime, git-ignored)
 └── .gitignore
 ```
 
 ## Prerequisites
 
-Any modern browser (Chrome, Firefox, Safari, Edge). No Node, no Python, no database.
+Node.js 18+ (for the server) and any modern browser (Chrome, Firefox, Safari, Edge). No database — history is stored as JSON files in `data/`.
 
 ## Installation
 
 ```bash
 git clone https://github.com/sajidurop/visualbug-hunter.git
 cd visualbug-hunter
+npm start
+# open http://localhost:3000
 ```
 
 > The repository above is the intended repo name for this project. If you publish it under a different name, update the clone URL here and the "View source" link in `index.html` / `brand.json`.
 
 ## Local development
 
-Just open the file:
-
 ```bash
-# Option 1 — double-click index.html, or:
-python3 -m http.server 8000
-# then open http://localhost:8000
+npm start
+# open http://localhost:3000
 ```
 
-Edit `index.html` directly; reload the browser to see changes. There is no build step.
+Edit `index.html` (UI) or `server.js` (API) directly; restart the server to see server changes. Browser-only mode still works: open `index.html` directly, or `python3 -m http.server 8000` — the app detects whether its server is running and falls back automatically.
 
 ## Environment variables
 
-None. API keys, where a feature offers a live model/API call, are entered in the app UI for that single session and are **never stored** — they are sent only to the provider you selected.
+Copy `.env.example` to `.env`. `PORT` (default 3000) is the only variable every project uses. Some projects accept provider keys from the environment (e.g. `OPENAI_API_KEY`, `GITHUB_TOKEN`) so keys never have to go through the browser; keys entered in the UI are sent only to the provider you selected and are **never stored**.
 
 ## Configuration
 
@@ -86,11 +100,22 @@ All creator/brand links live in one place: `brand.json` and the `BRAND` object a
 
 ## API documentation
 
-This project has no backend API of its own. Features that call an external API (OSV, npm registry, GitHub, Google DNS, your chosen LLM provider) call that provider's public API directly from the browser, only after you supply the URL or key.
+The server exposes a real HTTP API:
+
+- `GET /api/health` — server status.
+- `POST /api/check` — run the tool's main check (JSON body; the server does the real work and returns genuine results).
+- `GET /api/history` — past runs stored on disk.
+
+Some projects add their own endpoints (e.g. `POST /webhook/*` receivers, `GET /api/snapshots`, `GET /api/runs`) — see `server.js` for the full list. External APIs (OSV, npm registry, GitHub, Google DNS, your chosen LLM provider) are called server-side, only after you supply the URL or key.
 
 ## CLI commands
 
-None — this is a browser app. History and results export as JSON/CSV from inside the app.
+```bash
+npm start    # run the server on http://localhost:3000
+node --check server.js   # syntax-check the server
+```
+
+History and results also export as JSON/CSV from inside the app.
 
 ## Usage examples
 
@@ -107,16 +132,20 @@ Manual verification checklist (run before publishing):
 3. Reload the page — history from the previous run is still there (localStorage).
 4. Click the footer links — "Created by Sajidur" and "More free tools" both open https://alltoolfree.site, and "View source on GitHub" opens the repo under github.com/sajidurop once it is created.
 5. Export once — the downloaded file contains your real results.
+6. Server check: `npm start`, then open http://localhost:3000/api/health — it returns ok, and the UI shows a “● Live server” badge.
 
 ## Docker setup
 
-Not applicable — there is no server component. To self-host, copy this folder to any static host (GitHub Pages, Vercel, Netlify, Nginx, S3).
+```bash
+docker build -t visualbug-hunter .
+docker run -p 3000:3000 visualbug-hunter
+```
 
 ## Self-hosting and deployment
 
-- **GitHub Pages:** push this folder to a repo, enable Pages, done.
-- **Vercel / Netlify:** drag the folder in, or connect the repo — no build command needed.
-- **Any static host:** serve the folder as-is.
+- **Any VPS / Docker:** `docker build -t {slug} . && docker run -p 3000:3000 {slug}`, or `npm start` behind a reverse proxy.
+- **Render / Railway / Fly.io:** connect the repo; start command is `node server.js`.
+- **Static only (browser mode):** GitHub Pages / Vercel / Netlify serve `index.html` as-is — live server features are unavailable in this mode.
 
 ## Security and privacy
 
@@ -127,8 +156,8 @@ Not applicable — there is no server component. To self-host, copy this folder 
 
 ## Known limitations
 
-- Browser CORS rules mean some live URL checks only work for CORS-enabled sites; the app always offers a paste-based alternative.
-- History lives in the browser's localStorage, so it does not sync across devices and is cleared if you clear site data.
+- In browser-only mode (opening `index.html` directly), browser CORS rules still limit live URL checks; the app offers a paste-based alternative there. Running `npm start` removes this limit — the server fetches URLs directly.
+- In browser-only mode, history lives in localStorage and does not sync across devices. With the server running, history is stored on disk in `data/`.
 - Features that need a paid/public API (LLM calls, OSV, npm registry) need internet access and, where applicable, your own key.
 - No feature in this app fabricates results: if a live check cannot run, the app says so instead of showing made-up numbers.
 

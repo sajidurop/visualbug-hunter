@@ -1,0 +1,13 @@
+{
+  "name": "visualbug-hunter",
+  "version": "1.0.0",
+  "description": "Catch visual regressions before your users do.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}
