@@ -58,7 +58,7 @@ Any modern browser (Chrome, Firefox, Safari, Edge). No Node, no Python, no datab
 ## Installation
 
 ```bash
-git clone https://github.com/sajidurvisual-tech/visualbug-hunter.git
+git clone https://github.com/sajidurop/visualbug-hunter.git
 cd visualbug-hunter
 ```
 
@@ -105,7 +105,7 @@ Manual verification checklist (run before publishing):
 1. Open `index.html` — the page loads with no console errors.
 2. Run the core flow once with real input (see "How it works").
 3. Reload the page — history from the previous run is still there (localStorage).
-4. Click the footer links — "Created by Sajidur" and "More free tools" both open https://alltoolfree.site, and "View source on GitHub" opens the repo under github.com/sajidurvisual-tech once it is created.
+4. Click the footer links — "Created by Sajidur" and "More free tools" both open https://alltoolfree.site, and "View source on GitHub" opens the repo under github.com/sajidurop once it is created.
 5. Export once — the downloaded file contains your real results.
 
 ## Docker setup
@@ -148,4 +148,4 @@ MIT — see [LICENSE](LICENSE).
 
 ## Credits
 
-Created by [Sajidur](https://alltoolfree.site). More free tools: [AllToolFree](https://alltoolfree.site). Source code (once published): [github.com/sajidurvisual-tech](https://github.com/sajidurvisual-tech).
+Created by [Sajidur](https://alltoolfree.site). More free tools: [AllToolFree](https://alltoolfree.site). Source code (once published): [github.com/sajidurop](https://github.com/sajidurop).

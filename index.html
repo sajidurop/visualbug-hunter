@@ -70,13 +70,13 @@ dialog{border:1px solid var(--line);border-radius:12px;padding:20px;max-width:42
 </main>
 <footer>
 <p><strong>VisualBug Hunter v1.0.0</strong> · Created by <a href="https://alltoolfree.site" target="_blank" rel="noopener">Sajidur</a> · Open Source (MIT)</p>
-<p><a href="https://alltoolfree.site" target="_blank" rel="noopener">AllToolFree ↗</a> <a href="https://alltoolfree.site" target="_blank" rel="noopener">More free tools ↗</a> <a href="https://github.com/sajidurvisual-tech/visualbug-hunter" target="_blank" rel="noopener">View source on GitHub ↗</a> <a href="https://alltoolfree.site" target="_blank" rel="noopener">Discover AllToolFree ↗</a></p>
+<p><a href="https://alltoolfree.site" target="_blank" rel="noopener">AllToolFree ↗</a> <a href="https://alltoolfree.site" target="_blank" rel="noopener">More free tools ↗</a> <a href="https://github.com/sajidurop/visualbug-hunter" target="_blank" rel="noopener">View source on GitHub ↗</a> <a href="https://alltoolfree.site" target="_blank" rel="noopener">Discover AllToolFree ↗</a></p>
 <p class="muted">Self-hostable. Works offline except for features that fetch a URL or API you supply.</p>
 </footer>
 <dialog id="aboutDlg"><h3>About VisualBug Hunter</h3><p>Visual regression testing in the browser: upload a baseline and a new screenshot, compare pixels, highlight changed regions, and keep a run history.</p><p>Created by <a href="https://alltoolfree.site" target="_blank" rel="noopener">Sajidur</a></p><p><a href="https://alltoolfree.site" target="_blank" rel="noopener">Discover AllToolFree ↗</a> — more free tools by the same creator.</p><p class="muted">MIT License. Version 1.0.0.</p><button id="closeDlg">Close</button></dialog>
 <div id="toast"></div>
 <script>
-const BRAND={creator:"Sajidur",website:"https://alltoolfree.site",repository:"https://github.com/sajidurvisual-tech/visualbug-hunter",product:"VisualBug Hunter",version:"1.0.0"};
+const BRAND={creator:"Sajidur",website:"https://alltoolfree.site",repository:"https://github.com/sajidurop/visualbug-hunter",product:"VisualBug Hunter",version:"1.0.0"};
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
 function save(k,v){try{localStorage.setItem("visualbug-hunter:"+k,JSON.stringify(v))}catch(e){}}
 function load(k,d){try{const v=JSON.parse(localStorage.getItem("visualbug-hunter:"+k));return v==null?d:v}catch(e){return d}}
